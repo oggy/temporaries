@@ -5,4 +5,6 @@ spec_task :spec do |t|
   t.libs << 'lib' << 'spec'
 end
 
+cucumber_task
+
 task :default => :spec

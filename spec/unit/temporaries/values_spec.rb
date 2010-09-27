@@ -2,8 +2,10 @@ require 'spec/spec_helper'
 
 describe Temporaries::Values do
   before do
-    @context = Object.new
-    @context.extend Temporaries::Values
+    @context_class = Class.new(TestContext) do
+      include Temporaries::Values
+    end
+    @context = @context_class.new
   end
 
   describe "#push_constant_value and #pop_constant_value" do
@@ -391,7 +393,7 @@ describe Temporaries::Values do
       $variable = nil
     end
 
-    it "should set the given object's cvar to the pushed value until it is popped" do
+    it "should set the given global to the pushed value until it is popped" do
       $variable.should == 2
       @context.push_global_value :variable, 3
       $variable.should == 3
@@ -417,7 +419,7 @@ describe Temporaries::Values do
       $variable = 2
     end
 
-    it "should set the given object's cvar to the given value only during the given block" do
+    it "should set the given global to the given value only during the given block" do
       $variable.should == 2
       block_run = false
       @context.with_global_value :variable, 3 do
@@ -454,6 +456,155 @@ describe Temporaries::Values do
         end
       rescue exception_class => e
       end
+      $variable.should == 2
+    end
+  end
+end
+
+describe Temporaries::Values do
+  describe ".use_constant_value" do
+    before do
+      @mod = mod = Module.new
+      mod.const_set(:CONSTANT, 2)
+
+      @context_class = Class.new(TestContext) do
+        include Temporaries::Values
+        use_constant_value mod, :CONSTANT, 3
+      end
+      @context = @context_class.new
+    end
+
+    it "should set the given module's constant to the given value for the duration of the run" do
+      @mod::CONSTANT.should == 2
+      block_run = false
+      @context.run do
+        block_run = true
+        @mod::CONSTANT.should == 3
+      end
+      block_run.should be_true
+      @mod::CONSTANT.should == 2
+    end
+  end
+
+  describe ".use_attribute_value" do
+    before do
+      @klass = Class.new{attr_accessor :attribute}
+      @object = object = @klass.new
+      @object.attribute = 2
+
+      @context_class = Class.new(TestContext) do
+        include Temporaries::Values
+        use_attribute_value object, :attribute, 3
+      end
+      @context = @context_class.new
+    end
+
+    it "should set the given object's attribute to the given value for the duration of the run" do
+      @object.attribute.should == 2
+      block_run = false
+      @context.run do
+        block_run = true
+        @object.attribute.should == 3
+      end
+      block_run.should be_true
+      @object.attribute.should == 2
+    end
+  end
+
+  describe ".use_hash_value" do
+    before do
+      @hash = hash = {:key => 2}
+
+      @context_class = Class.new(TestContext) do
+        include Temporaries::Values
+        use_hash_value hash, :key, 3
+      end
+      @context = @context_class.new
+    end
+
+    it "should set the given hash's key to the given value for the duration of the run" do
+      @hash[:key].should == 2
+      block_run = false
+      @context.run do
+        block_run = true
+        @hash[:key].should == 3
+      end
+      block_run.should be_true
+      @hash[:key].should == 2
+    end
+  end
+
+  describe ".use_instance_variable_value" do
+    before do
+      @object = object = Object.new
+      @object.instance_eval{@variable = 2}
+
+      @context_class = Class.new(TestContext) do
+        include Temporaries::Values
+        use_instance_variable_value object, :variable, 3
+      end
+      @context = @context_class.new
+    end
+
+    it "should set the given object's ivar to the given value for the duration of the run" do
+      @object.instance_variable_get(:@variable).should == 2
+      block_run = false
+      @context.run do
+        block_run = true
+        @object.instance_variable_get(:@variable).should == 3
+      end
+      block_run.should be_true
+      @object.instance_variable_get(:@variable).should == 2
+    end
+  end
+
+  describe ".use_class_variable_value" do
+    before do
+      @class = klass = Class.new
+      @class.class_eval '@@variable = 2'
+
+      @context_class = Class.new(TestContext) do
+        include Temporaries::Values
+        use_class_variable_value klass, :variable, 3
+      end
+      @context = @context_class.new
+    end
+
+    it "should set the given object's cvar to the given value for the duration of the run" do
+      @class.class_eval('@@variable').should == 2
+      block_run = false
+      @context.run do
+        block_run = true
+        @class.class_eval('@@variable').should == 3
+      end
+      block_run.should be_true
+      @class.class_eval('@@variable').should == 2
+    end
+  end
+
+  describe ".use_global_value" do
+    before do
+      $variable = 2
+
+      @context_class = Class.new(TestContext) do
+        include Temporaries::Values
+        use_global_value :variable, 3
+      end
+      @context = @context_class.new
+    end
+
+    after do
+      $variable = nil
+    end
+
+    it "should set the given global to the given value for the duration of the run" do
+      $variable.should == 2
+      block_run = false
+      @context.run do
+        block_run = true
+        $variable.should == 3
+      end
+      block_run.should be_true
       $variable.should == 2
     end
   end

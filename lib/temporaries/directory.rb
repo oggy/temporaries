@@ -4,6 +4,22 @@ module Temporaries
   module Directory
     include Core
 
+    def self.included(base)
+      base.extend ClassMethods
+    end
+
+    module ClassMethods
+      def use_temporary_directory(directory)
+        temporaries_adapter.before do
+          push_temporary_directory(directory)
+        end
+
+        temporaries_adapter.after do
+          pop_temporary_directory
+        end
+      end
+    end
+
     def push_temporary_directory(directory)
       exists = File.exist?(directory)
       push_temporary(:directory, [directory, exists])

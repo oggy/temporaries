@@ -95,7 +95,26 @@ module Temporaries
             end
           end
         EOS
+
+        mod::ClassMethods.module_eval <<-EOS, __FILE__, __LINE__ + 1
+          def use_#{name}_value(#{signature}, value)
+            temporaries_adapter.before do
+              push_#{name}_value(#{signature}, value)
+            end
+
+            temporaries_adapter.after do
+              pop_#{name}_value(#{signature})
+            end
+          end
+        EOS
       end
+    end
+
+    def self.included(base)
+      base.extend ClassMethods
+    end
+
+    module ClassMethods
     end
 
     def self.define_helpers_for(name, &block)

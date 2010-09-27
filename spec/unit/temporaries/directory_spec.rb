@@ -140,3 +140,31 @@ describe Temporaries::Directory do
     end
   end
 end
+
+describe Temporaries::Directory do
+  describe ".use_temporary_directory" do
+    before do
+      @context_class = Class.new(TestContext) do
+        include Temporaries::Directory
+        use_temporary_directory "#{TMP}/dir"
+      end
+      @context = @context_class.new
+    end
+
+    it "should create the given directory and make it the #tmp for the duration of the run" do
+      @context.tmp.should be_nil
+      File.should_not exist("#{TMP}/dir")
+
+      block_run = false
+      @context.run do
+        block_run = true
+        @context.tmp.should == "#{TMP}/dir"
+        File.should be_directory("#{TMP}/dir")
+      end
+      block_run.should be_true
+
+      @context.tmp.should be_nil
+      File.should_not exist("#{TMP}/dir")
+    end
+  end
+end
