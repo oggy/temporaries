@@ -1,6 +1,6 @@
 # Temporaries
 
-Set things temporarily and declaratively. Perfect for tests!
+Set things temporarily and declaratively. Best way to test.
 
  * Set values of constants.
  * Set values of attributes.
@@ -15,10 +15,10 @@ code. Nest them arbitrarily; the innermost one applies.
 
 ## How
 
-## In RSpec
+### In RSpec
 
     describe MyClass do
-      # Set Mylib.foo will be 5 within these examples.
+      # Mylib.foo will be 5 within these examples.
       use_temporary_attribute_value MyLib, :foo, 5
 
       describe MyClass do
@@ -27,18 +27,27 @@ code. Nest them arbitrarily; the innermost one applies.
       end
     end
 
-  * Similarly of course for constants, hash keys, etc.
+Here's the full list of methods you can use:
 
-## In Test::Unit
+    use_temporary_hash_value(hash, key, value)
+    use_temporary_constant_value(module, :constant, value)
+    use_temporary_attribute_value(object, :attribute, value)
+    use_temporary_instance_variable_value(object, :name, value)
+    use_temporary_class_variable_value(object, :name, value)
+    use_temporary_global_value(:name, value)
 
-    # Oh look, exactly the same as RSpec!
+Sigils in the `name` are unnecessary in the last 3 (unlike
+`instance_variable_get`, for instance).
+
+### In Test::Unit
+
     class MyTest < Test::Unit::TestCase
       use_temporary_attribute_value MyLib, :foo, 5
     end
 
-## Getting Deeper
+## Digging Deeper
 
-You may also set the temporary for the duration of a particular block of code:
+You may also set the temporary for the duration of a particular block:
 
     with_hash_value hash, key, value do
       ...
@@ -78,16 +87,16 @@ Or push and pop temporary values onto the stack yourself:
 
     # etc.
 
-Naturally, you must keep them balancd.
+Keep 'em balanced, maestro.
 
 ## Contributing
 
- * Bug reports: http://github.com/oggy/temporaries/issues
- * Source: http://github.com/oggy/temporaries
+ * [Source.](https://github.com/oggy/temporaries)
+ * [Bug reports.](https://github.com/oggy/temporaries/issues)
  * Patches: Fork on Github, send pull request.
-   * Ensure patch includes tests.
+   * Include tests where practical.
    * Leave the version alone, or bump it in a separate commit.
 
 ## Copyright
 
-Copyright (c) 2010 George Ogata. See LICENSE for details.
+Copyright (c) George Ogata. See LICENSE for details.
