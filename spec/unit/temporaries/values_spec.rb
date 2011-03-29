@@ -11,27 +11,42 @@ describe Temporaries::Values do
   describe "#push_constant_value and #pop_constant_value" do
     before do
       @mod = Module.new
-      @mod.const_set(:CONSTANT, 2)
     end
 
-    it "should set the given module's constant to the pushed value until it is popped" do
-      @mod::CONSTANT.should == 2
-      @context.push_constant_value @mod, :CONSTANT, 3
-      @mod::CONSTANT.should == 3
-      @context.pop_constant_value @mod, :CONSTANT
-      @mod::CONSTANT.should == 2
+    describe "when the constant already exists" do
+      before do
+        @mod.const_set(:CONSTANT, 2)
+      end
+
+      it "should set the given module's constant to the pushed value until it is popped" do
+        @mod::CONSTANT.should == 2
+        @context.push_constant_value @mod, :CONSTANT, 3
+        @mod::CONSTANT.should == 3
+        @context.pop_constant_value @mod, :CONSTANT
+        @mod::CONSTANT.should == 2
+      end
+
+      it "should be nestable" do
+        @mod::CONSTANT.should == 2
+        @context.push_constant_value @mod, :CONSTANT, 3
+        @mod::CONSTANT.should == 3
+        @context.push_constant_value @mod, :CONSTANT, 5
+        @mod::CONSTANT.should == 5
+        @context.pop_constant_value @mod, :CONSTANT
+        @mod::CONSTANT.should == 3
+        @context.pop_constant_value @mod, :CONSTANT
+        @mod::CONSTANT.should == 2
+      end
     end
 
-    it "should be nestable" do
-      @mod::CONSTANT.should == 2
-      @context.push_constant_value @mod, :CONSTANT, 3
-      @mod::CONSTANT.should == 3
-      @context.push_constant_value @mod, :CONSTANT, 5
-      @mod::CONSTANT.should == 5
-      @context.pop_constant_value @mod, :CONSTANT
-      @mod::CONSTANT.should == 3
-      @context.pop_constant_value @mod, :CONSTANT
-      @mod::CONSTANT.should == 2
+    describe "when the constant does not already exist" do
+      it "should set the given module's constant to the pushed value, and remove it when popped" do
+        @mod.const_defined?(:CONSTANT).should be_false
+        @context.push_constant_value @mod, :CONSTANT, 3
+        @mod::CONSTANT.should == 3
+        @context.pop_constant_value @mod, :CONSTANT
+        @mod.const_defined?(:CONSTANT).should be_false
+      end
     end
   end
 
@@ -160,27 +175,43 @@ describe Temporaries::Values do
 
   describe "#push_hash_value and #pop_hash_value" do
     before do
-      @hash = {:key => 2}
+      @hash = {}
     end
 
-    it "should set the given hash's key to the pushed value until it is popped" do
-      @hash[:key].should == 2
-      @context.push_hash_value @hash, :key, 3
-      @hash[:key].should == 3
-      @context.pop_hash_value @hash, :key
-      @hash[:key].should == 2
+    describe "when the hash key already exists" do
+      before do
+        @hash[:key] = 2
+      end
+
+      it "should set the given hash's key to the pushed value until it is popped" do
+        @hash[:key].should == 2
+        @context.push_hash_value @hash, :key, 3
+        @hash[:key].should == 3
+        @context.pop_hash_value @hash, :key
+        @hash[:key].should == 2
+      end
+
+      it "should be nestable" do
+        @hash[:key].should == 2
+        @context.push_hash_value @hash, :key, 3
+        @hash[:key].should == 3
+        @context.push_hash_value @hash, :key, 5
+        @hash[:key].should == 5
+        @context.pop_hash_value @hash, :key
+        @hash[:key].should == 3
+        @context.pop_hash_value @hash, :key
+        @hash[:key].should == 2
+      end
     end
 
-    it "should be nestable" do
-      @hash[:key].should == 2
-      @context.push_hash_value @hash, :key, 3
-      @hash[:key].should == 3
-      @context.push_hash_value @hash, :key, 5
-      @hash[:key].should == 5
-      @context.pop_hash_value @hash, :key
-      @hash[:key].should == 3
-      @context.pop_hash_value @hash, :key
-      @hash[:key].should == 2
+    describe "when the hash key does not already exist" do
+      it "should set the given hash's key to the pushed value, and remove it when popped" do
+        @hash.key?(:key).should be_false
+        @context.push_hash_value @hash, :key, 3
+        @hash[:key].should == 3
+        @context.pop_hash_value @hash, :key
+        @hash.key?(:key).should be_false
+      end
     end
   end
 
@@ -233,27 +264,42 @@ describe Temporaries::Values do
   describe "#push_instance_variable_value and #pop_instance_variable_value" do
     before do
       @object = Object.new
-      @object.instance_eval{@variable = 2}
     end
 
-    it "should set the given object's ivar to the pushed value until it is popped" do
-      @object.instance_variable_get(:@variable).should == 2
-      @context.push_instance_variable_value @object, :variable, 3
-      @object.instance_variable_get(:@variable).should == 3
-      @context.pop_instance_variable_value @object, :variable
-      @object.instance_variable_get(:@variable).should == 2
+    describe "when the instance variable already exists" do
+      before do
+        @object.instance_eval{@variable = 2}
+      end
+
+      it "should set the given object's ivar to the pushed value until it is popped" do
+        @object.instance_variable_get(:@variable).should == 2
+        @context.push_instance_variable_value @object, :variable, 3
+        @object.instance_variable_get(:@variable).should == 3
+        @context.pop_instance_variable_value @object, :variable
+        @object.instance_variable_get(:@variable).should == 2
+      end
+
+      it "should be nestable" do
+        @object.instance_variable_get(:@variable).should == 2
+        @context.push_instance_variable_value @object, :variable, 3
+        @object.instance_variable_get(:@variable).should == 3
+        @context.push_instance_variable_value @object, :variable, 5
+        @object.instance_variable_get(:@variable).should == 5
+        @context.pop_instance_variable_value @object, :variable
+        @object.instance_variable_get(:@variable).should == 3
+        @context.pop_instance_variable_value @object, :variable
+        @object.instance_variable_get(:@variable).should == 2
+      end
     end
 
-    it "should be nestable" do
-      @object.instance_variable_get(:@variable).should == 2
-      @context.push_instance_variable_value @object, :variable, 3
-      @object.instance_variable_get(:@variable).should == 3
-      @context.push_instance_variable_value @object, :variable, 5
-      @object.instance_variable_get(:@variable).should == 5
-      @context.pop_instance_variable_value @object, :variable
-      @object.instance_variable_get(:@variable).should == 3
-      @context.pop_instance_variable_value @object, :variable
-      @object.instance_variable_get(:@variable).should == 2
+    describe "when the instance variable does not already exist" do
+      it "should set the given instance variable to the pushed value, and remove it when popped" do
+        @object.instance_variable_defined?(:@variable).should be_false
+        @context.push_instance_variable_value @object, :variable, 3
+        @object.instance_variable_get(:@variable).should == 3
+        @context.pop_instance_variable_value @object, :variable
+        @object.instance_variable_defined?(:@variable).should be_false
+      end
     end
   end
 
@@ -306,34 +352,49 @@ describe Temporaries::Values do
 
   describe "#push_class_variable_value and #pop_class_variable_value" do
     before do
-      # Did you know...?
-      #
-      #  * class C; @@x; end  refers to @@x in C
-      #  * C.class_eval '@@x' refers to @@x in C
-      #  * C.class_eval{@@x}  refers to @@x in Object
-      #  * Class.new{@@x}     refers to @@x in Object
       @class = Class.new
-      @class.class_eval '@@variable = 2'
     end
 
-    it "should set the given object's cvar to the pushed value until it is popped" do
-      @class.class_eval('@@variable').should == 2
-      @context.push_class_variable_value @class, :variable, 3
-      @class.class_eval('@@variable').should == 3
-      @context.pop_class_variable_value @class, :variable
-      @class.class_eval('@@variable').should == 2
+    describe "when the class variable already exists" do
+      before do
+        # Did you know...?
+        #
+        #  * class C; @@x; end  refers to @@x in C
+        #  * C.class_eval '@@x' refers to @@x in C
+        #  * C.class_eval{@@x}  refers to @@x in Object
+        #  * Class.new{@@x}     refers to @@x in Object
+        @class.class_eval '@@variable = 2'
+      end
+
+      it "should set the given object's cvar to the pushed value until it is popped" do
+        @class.class_eval('@@variable').should == 2
+        @context.push_class_variable_value @class, :variable, 3
+        @class.class_eval('@@variable').should == 3
+        @context.pop_class_variable_value @class, :variable
+        @class.class_eval('@@variable').should == 2
+      end
+
+      it "should be nestable" do
+        @class.class_eval('@@variable').should == 2
+        @context.push_class_variable_value @class, :variable, 3
+        @class.class_eval('@@variable').should == 3
+        @context.push_class_variable_value @class, :variable, 5
+        @class.class_eval('@@variable').should == 5
+        @context.pop_class_variable_value @class, :variable
+        @class.class_eval('@@variable').should == 3
+        @context.pop_class_variable_value @class, :variable
+        @class.class_eval('@@variable').should == 2
+      end
     end
 
-    it "should be nestable" do
-      @class.class_eval('@@variable').should == 2
-      @context.push_class_variable_value @class, :variable, 3
-      @class.class_eval('@@variable').should == 3
-      @context.push_class_variable_value @class, :variable, 5
-      @class.class_eval('@@variable').should == 5
-      @context.pop_class_variable_value @class, :variable
-      @class.class_eval('@@variable').should == 3
-      @context.pop_class_variable_value @class, :variable
-      @class.class_eval('@@variable').should == 2
+    describe "when the class variable does not already exist" do
+      it "should set the given class variable to the pushed value, and remove it when popped" do
+        @class.class_variable_defined?('@@variable').should be_false
+        @context.push_class_variable_value @class, :variable, 3
+        @class.class_eval('@@variable').should == 3
+        @context.pop_class_variable_value @class, :variable
+        @class.class_variable_defined?('@@variable').should be_false
+      end
     end
   end
 

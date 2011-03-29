@@ -50,18 +50,34 @@ module Temporaries
   module Values
     include Core
 
+    UNDEFINED = RUBY_VERSION < '1.9' ? Object.new : BasicObject.new
+    class << UNDEFINED
+      def inspect
+        '<UNDEFINED>'
+      end
+      alias to_s inspect
+    end
+
     class Helpers
       def initialize(name)
         @name = name
       end
       attr_reader :name
 
-      [:signature, :get, :set].each do |name|
+      def signature(signature = nil)
+        if signature
+          @signature = signature
+        else
+          @signature
+        end
+      end
+
+      [:exists, :get, :set, :remove].each do |name|
         attr_reader name
         class_eval <<-EOS
           def #{name}(source=nil)
             if source
-              @#{name} = source
+              @#{name} = '(' + source + ')'
             else
               @#{name}
             end
@@ -75,15 +91,24 @@ module Temporaries
       end
 
       def define(mod)
+        if exists
+          save = "original_value = #{exists} ? #{get} : Temporaries::Values::UNDEFINED"
+          restore = "value == Temporaries::Values::UNDEFINED ? #{remove} : #{set}"
+        else
+          save = "original_value = #{get}"
+          restore = set
+        end
+
         mod.class_eval <<-EOS, __FILE__, __LINE__ + 1
           def push_#{name}_value(#{signature}, value)
-            push_temporary(#{stack_key}, #{get})
+            #{save}
+            push_temporary(#{stack_key}, original_value)
             #{set}
           end
 
           def pop_#{name}_value(#{signature})
             value = pop_temporary(#{stack_key})
-            #{set}
+            #{restore}
           end
 
           def with_#{name}_value(#{signature}, value)
@@ -125,11 +150,13 @@ module Temporaries
 
     define_helpers_for :constant do
       signature 'mod, constant'
+      exists 'mod.const_defined?(constant)'
       get 'mod.const_get(constant)'
       set <<-EOS
         mod.instance_eval{remove_const(constant) if const_defined?(constant)
         const_set(constant, value)}
       EOS
+      remove 'mod.send :remove_const, constant'
     end
 
     define_helpers_for :attribute do
@@ -140,20 +167,26 @@ module Temporaries
 
     define_helpers_for :hash do
       signature 'hash, key'
+      exists 'hash.key?(key)'
       get 'hash[key]'
       set 'hash[key] = value'
+      remove 'hash.delete(key)'
     end
 
     define_helpers_for :instance_variable do
       signature 'object, name'
-      get 'object.instance_variable_get("@#{name}")'
-      set 'object.instance_variable_set("@#{name}", value)'
+      exists 'object.instance_variable_defined?("@#{name}")'
+      get 'object.instance_variable_get "@#{name}"'
+      set 'object.instance_variable_set "@#{name}", value'
+      remove 'object.send :remove_instance_variable, "@#{name}"'
     end
 
     define_helpers_for :class_variable do
       signature 'klass, name'
-      get 'klass.class_eval("@@#{name}")'
-      set 'klass.class_eval("@@#{name} = value")'
+      exists 'klass.class_variable_defined?("@@#{name}")'
+      get 'klass.send :class_variable_get, "@@#{name}"'
+      set 'klass.send :class_variable_set, "@@#{name}", value'
+      remove 'klass.send :remove_class_variable, "@@#{name}"'
     end
 
     define_helpers_for :global do
