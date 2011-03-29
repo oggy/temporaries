@@ -7,7 +7,7 @@ end
 
 if defined?($TEMPORARIES_TEST)
   # Testing this library. Don't install anything.
-elsif defined?(Spec::Runner)
+elsif defined?(RSpec)
   Temporaries::Adapters::RSpec.install
 elsif defined?(Test::Unit)
   Temporaries::Adapters::TestUnit.install

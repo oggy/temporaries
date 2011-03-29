@@ -2,7 +2,7 @@ module Temporaries
   module Adapters
     class RSpec < Base
       def self.install
-        Spec::Runner.configure do |config|
+        ::RSpec.configure do |config|
           config.extend Extension
           config.include Values
           config.include Directory
