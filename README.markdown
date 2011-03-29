@@ -91,8 +91,8 @@ Keep 'em balanced, maestro.
 
 ## Contributing
 
- * [Source.](https://github.com/oggy/temporaries)
- * [Bug reports.](https://github.com/oggy/temporaries/issues)
+ * [Source](https://github.com/oggy/temporaries)
+ * [Bug reports](https://github.com/oggy/temporaries/issues)
  * Patches: Fork on Github, send pull request.
    * Include tests where practical.
    * Leave the version alone, or bump it in a separate commit.
