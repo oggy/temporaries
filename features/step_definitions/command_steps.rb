@@ -6,7 +6,7 @@ Given /^I have a file "(.*?)" containing:$/ do |path, content|
 end
 
 When /^I run "(.*?)"$/ do |command|
-  @output = `#{command} 2>&1`
+  @output = `bundle exec #{command} 2>&1`
 end
 
 Then /^I should see "(.*?)"$/ do |expected|

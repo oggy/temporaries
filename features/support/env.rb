@@ -1,7 +1,11 @@
+ROOT = File.expand_path('../..', File.dirname(__FILE__))
+$:.unshift File.expand_path('../../lib', File.dirname(__FILE__))
+ENV['BUNDLE_GEMFILE'] = "#{ROOT}/Gemfile"
+
 $TEMPORARIES_TEST = true
 require 'temporaries'
 require 'fileutils'
-require 'spec/expectations'
+require 'rspec/expectations'
 
 TMP = File.expand_path(File.dirname(__FILE__) + '/../tmp')
 LIB = File.expand_path(File.dirname(__FILE__) + '/../../lib')

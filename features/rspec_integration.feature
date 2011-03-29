@@ -21,5 +21,5 @@ Feature: Rspec Integration
       end
     end
     """
-  When I run "spec rspec.rb"
+  When I run "rspec rspec.rb"
   Then I should see "1 example, 0 failures"
