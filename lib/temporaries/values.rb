@@ -192,7 +192,7 @@ module Temporaries
     define_helpers_for :global do
       signature 'name'
       get 'eval("$#{name}")'
-      set 'eval("lambda{|value| $#{name} = value}").call(value)'
+      set 'eval("$#{name} = value")'
     end
   end
 end
