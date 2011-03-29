@@ -18,5 +18,5 @@ Gem::Specification.new do |s|
   s.specification_version = 3
   s.add_development_dependency 'ritual', '0.3.0'
   s.add_development_dependency 'rspec', '2.5.0'
-  s.add_development_dependency 'cucumber', '0.10.0'
+  s.add_development_dependency 'cucumber', '0.10.2'
 end
