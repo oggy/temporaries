@@ -19,22 +19,22 @@ code. Nest them arbitrarily; the innermost one applies.
 
     describe MyClass do
       # Mylib.foo will be 5 within these examples.
-      use_temporary_attribute_value MyLib, :foo, 5
+      use_attribute_value MyLib, :foo, 5
 
       describe MyClass do
         # In this nested example group, it will be 7.
-        use_temporary_attribute_value MyLib, :foo, 7
+        use_attribute_value MyLib, :foo, 7
       end
     end
 
 Here's the full list of methods you can use:
 
-    use_temporary_hash_value(hash, key, value)
-    use_temporary_constant_value(module, :constant, value)
-    use_temporary_attribute_value(object, :attribute, value)
-    use_temporary_instance_variable_value(object, :name, value)
-    use_temporary_class_variable_value(object, :name, value)
-    use_temporary_global_value(:name, value)
+    use_hash_value(hash, key, value)
+    use_constant_value(module, :constant, value)
+    use_attribute_value(object, :attribute, value)
+    use_instance_variable_value(object, :name, value)
+    use_class_variable_value(object, :name, value)
+    use_global_value(:name, value)
 
 Sigils in the `name` are unnecessary in the last 3 (unlike
 `instance_variable_get`, for instance).
@@ -42,7 +42,7 @@ Sigils in the `name` are unnecessary in the last 3 (unlike
 ### In Test::Unit
 
     class MyTest < Test::Unit::TestCase
-      use_temporary_attribute_value MyLib, :foo, 5
+      use_attribute_value MyLib, :foo, 5
     end
 
 ## Digging Deeper
