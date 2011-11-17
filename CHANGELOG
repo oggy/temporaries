@@ -1,5 +1,10 @@
+== LATEST
+
+ * Attempt to fix Syck error on install in gemspec.
+
 == 0.0.2 2011-11-17
 
+ * Fix NoMethodError popping hash constants.
  * Fix method names in README.
 
 == 0.0.1 2011-03-29
