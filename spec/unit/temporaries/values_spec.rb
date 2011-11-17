@@ -48,6 +48,17 @@ describe Temporaries::Values do
         @mod.const_defined?(:CONSTANT).should be_false
       end
     end
+
+    describe "when the value is a hash" do
+      it "should pop cleanly, even though a hash can't be compared with #== to UNDEFINED in Ruby 1.9" do
+        @context.push_constant_value @mod, :CONSTANT, {}
+        @context.push_constant_value @mod, :CONSTANT, {}
+        @context.pop_constant_value @mod, :CONSTANT
+        lambda do
+          @context.pop_constant_value @mod, :CONSTANT
+        end.should_not raise_error
+      end
+    end
   end
 
   describe "#with_constant_value" do

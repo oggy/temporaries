@@ -93,7 +93,7 @@ module Temporaries
       def define(mod)
         if exists
           save = "original_value = #{exists} ? #{get} : Temporaries::Values::UNDEFINED"
-          restore = "value == Temporaries::Values::UNDEFINED ? #{remove} : #{set}"
+          restore = "value.equal?(Temporaries::Values::UNDEFINED) ? #{remove} : #{set}"
         else
           save = "original_value = #{get}"
           restore = set
