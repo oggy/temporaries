@@ -15,7 +15,7 @@ code. Nest them arbitrarily; the innermost one applies.
 
 ## How
 
-### In RSpec
+### In RSpec or MiniTest::Spec
 
     describe MyClass do
       # Mylib.foo will be 5 within these examples.
