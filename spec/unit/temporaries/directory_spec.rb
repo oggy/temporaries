@@ -55,7 +55,7 @@ describe Temporaries::Directory do
       File.should_not exist("#{TMP}/dir1")
     end
 
-    it "should not destroy the directory on pop if the directory already existed on push" do
+    it "should not destroy the directory on a nested pop if the directory already existed on push" do
       @context.tmp.should be_nil
       File.should_not exist("#{TMP}/dir")
 
@@ -78,6 +78,18 @@ describe Temporaries::Directory do
 
       @context.tmp.should be_nil
       File.should_not exist("#{TMP}/dir")
+    end
+
+    it "should first destroy the directory on the outermost push if it exists" do
+      FileUtils.mkdir_p "#{TMP}/dir"
+      FileUtils.touch "#{TMP}/dir/file"
+
+      @context.tmp.should be_nil
+      File.should exist("#{TMP}/dir/file")
+
+      @context.push_temporary_directory("#{TMP}/dir")
+
+      File.should_not exist("#{TMP}/dir/file")
     end
   end
 

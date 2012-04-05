@@ -21,9 +21,15 @@ module Temporaries
     end
 
     def push_temporary_directory(directory)
-      exists = File.exist?(directory)
-      push_temporary(:directory, [directory, exists])
-      FileUtils.mkdir_p directory unless exists
+      if temporary_stack_empty?(:directory)
+        FileUtils.rm_rf directory
+        FileUtils.mkdir_p directory
+        push_temporary(:directory, [directory, false])
+      else
+        exists = File.exist?(directory)
+        FileUtils.mkdir_p directory unless exists
+        push_temporary(:directory, [directory, exists])
+      end
     end
 
     def pop_temporary_directory

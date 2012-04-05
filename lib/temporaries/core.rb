@@ -14,6 +14,10 @@ module Temporaries
       temporaries[key].last
     end
 
+    def temporary_stack_empty?(key)
+      temporaries[key].empty?
+    end
+
     def temporaries
       @temporaries ||= Hash.new{|h,k| h[k] = []}
     end
