@@ -10,7 +10,11 @@ if defined?($TEMPORARIES_TEST)
 elsif defined?(RSpec)
   Temporaries::Adapters::RSpec.install
 elsif defined?(MiniTest::Unit::TestCase)
-  Temporaries::Adapters::MiniTest.install
+  if RUBY_VERSION >= '1.9.3'
+    Temporaries::Adapters::MiniTest.install
+  else
+    Temporaries::Adapters::TestUnit.install(MiniTest::Unit)
+  end
 elsif defined?(Test::Unit)
-  Temporaries::Adapters::TestUnit.install
+  Temporaries::Adapters::TestUnit.install(Test::Unit)
 end

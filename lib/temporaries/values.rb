@@ -50,7 +50,7 @@ module Temporaries
   module Values
     include Core
 
-    UNDEFINED = RUBY_VERSION < '1.9' ? Object.new : BasicObject.new
+    UNDEFINED = Object.new
     class << UNDEFINED
       def inspect
         '<UNDEFINED>'

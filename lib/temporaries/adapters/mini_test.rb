@@ -1,6 +1,8 @@
 module Temporaries
   module Adapters
     class MiniTest < Base
+      # For ruby <= 1.9.2, MiniTest is actually adapted via the
+      # Test::Unit adapter.
       def self.install
         ::MiniTest::Unit::TestCase.class_eval do
           extend Extension

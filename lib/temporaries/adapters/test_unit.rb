@@ -1,8 +1,10 @@
 module Temporaries
   module Adapters
     class TestUnit < Base
-      def self.install
-        Test::Unit::TestCase.class_eval do
+      # This is used for both Test::Unit <= 1.9 and MiniTest::Unit
+      # <= 1.9.2.
+      def self.install(mod)
+        mod::TestCase.class_eval do
           extend Extension
           include Values
           include Directory
