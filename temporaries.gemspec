@@ -16,7 +16,7 @@ Gem::Specification.new do |s|
   s.require_path = 'lib'
 
   s.specification_version = 3
-  s.add_development_dependency 'ritual', '0.3.0'
-  s.add_development_dependency 'rspec', '2.5.0'
-  s.add_development_dependency 'cucumber', '0.10.2'
+  s.add_development_dependency 'ritual', '0.4.1'
+  s.add_development_dependency 'rspec', '2.10.0'
+  s.add_development_dependency 'cucumber', '1.2.0'
 end
