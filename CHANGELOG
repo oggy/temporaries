@@ -1,3 +1,7 @@
+== LATEST
+
+ * Support minitest/unit and minitest/spec.
+
 == 0.0.3 2011-11-17
 
  * Attempt to fix Syck error on install in gemspec.
