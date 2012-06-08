@@ -8,6 +8,7 @@ Set things temporarily and declaratively. Best way to test.
  * Set values of instance variables.
  * Set values of class variables.
  * Set values of globals.
+ * Set definitions of methods.
  * Set a temporary directory.
 
 Do it for the length of a test, or within a specific block in your
@@ -35,6 +36,7 @@ Here's the full list of methods you can use:
     use_instance_variable_value(object, :name, value)
     use_class_variable_value(object, :name, value)
     use_global_value(:name, value)
+    use_method_definition(module, :name, ->(*args){defintion})
 
 Sigils in the `name` are unnecessary in the last 3 (unlike
 `instance_variable_get`, for instance).
@@ -70,6 +72,10 @@ You may also set the temporary for the duration of a particular block:
     end
 
     with_global_value :name, value do
+      ...
+    end
+
+    with_method_definition module, :name, ->(*args){definition} do
       ...
     end
 

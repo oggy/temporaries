@@ -100,35 +100,35 @@ module Temporaries
         end
 
         mod.class_eval <<-EOS, __FILE__, __LINE__ + 1
-          def push_#{name}_value(#{signature}, value)
+          def push_#{name}(#{signature}, value)
             #{save}
             push_temporary(#{stack_key}, original_value)
             #{set}
           end
 
-          def pop_#{name}_value(#{signature})
+          def pop_#{name}(#{signature})
             value = pop_temporary(#{stack_key})
             #{restore}
           end
 
-          def with_#{name}_value(#{signature}, value)
-            push_#{name}_value(#{signature}, value)
+          def with_#{name}(#{signature}, value)
+            push_#{name}(#{signature}, value)
             begin
               yield
             ensure
-              pop_#{name}_value(#{signature})
+              pop_#{name}(#{signature})
             end
           end
         EOS
 
         mod::ClassMethods.module_eval <<-EOS, __FILE__, __LINE__ + 1
-          def use_#{name}_value(#{signature}, value)
+          def use_#{name}(#{signature}, value)
             temporaries_adapter.before do
-              push_#{name}_value(#{signature}, value)
+              push_#{name}(#{signature}, value)
             end
 
             temporaries_adapter.after do
-              pop_#{name}_value(#{signature})
+              pop_#{name}(#{signature})
             end
           end
         EOS
@@ -148,7 +148,7 @@ module Temporaries
       helpers.define(self)
     end
 
-    define_helpers_for :constant do
+    define_helpers_for :constant_value do
       signature 'mod, constant'
       exists 'mod.const_defined?(constant)'
       get 'mod.const_get(constant)'
@@ -159,13 +159,13 @@ module Temporaries
       remove 'mod.send :remove_const, constant'
     end
 
-    define_helpers_for :attribute do
+    define_helpers_for :attribute_value do
       signature 'object, attribute'
       get 'object.send(attribute)'
       set 'object.send("#{attribute}=", value)'
     end
 
-    define_helpers_for :hash do
+    define_helpers_for :hash_value do
       signature 'hash, key'
       exists 'hash.key?(key)'
       get 'hash[key]'
@@ -173,7 +173,7 @@ module Temporaries
       remove 'hash.delete(key)'
     end
 
-    define_helpers_for :instance_variable do
+    define_helpers_for :instance_variable_value do
       signature 'object, name'
       exists 'object.instance_variable_defined?("@#{name}")'
       get 'object.instance_variable_get "@#{name}"'
@@ -181,7 +181,7 @@ module Temporaries
       remove 'object.send :remove_instance_variable, "@#{name}"'
     end
 
-    define_helpers_for :class_variable do
+    define_helpers_for :class_variable_value do
       signature 'klass, name'
       exists 'klass.class_variable_defined?("@@#{name}")'
       get 'klass.send :class_variable_get, "@@#{name}"'
@@ -189,10 +189,18 @@ module Temporaries
       remove 'klass.send :remove_class_variable, "@@#{name}"'
     end
 
-    define_helpers_for :global do
+    define_helpers_for :global_value do
       signature 'name'
       get 'eval("$#{name}")'
       set 'eval("$#{name} = value")'
+    end
+
+    define_helpers_for :method_definition do
+      signature 'klass, name'
+      exists 'klass.method_defined?(name) && (method = klass.instance_method(name)) && method.owner.equal?(klass)'
+      get 'method'
+      set 'klass.__send__(:define_method, name, value)'
+      remove 'klass.__send__(:remove_method, name)'
     end
   end
 end

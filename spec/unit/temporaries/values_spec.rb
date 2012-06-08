@@ -531,6 +531,96 @@ describe Temporaries::Values do
       $variable.should == 2
     end
   end
+
+  describe "#push_method_definition and #pop_method_definition" do
+    before do
+      @klass = Class.new
+      @instance = @klass.new
+    end
+
+    describe "when the method already exists" do
+      before do
+        @klass.send(:define_method, :meth) { 2 }
+      end
+
+      it "should set the given module's method to the pushed definition until it is popped" do
+        @instance.meth.should == 2
+        @context.push_method_definition @klass, :meth, lambda{3}
+        @instance.meth.should == 3
+        @context.pop_method_definition @klass, :meth
+        @instance.meth.should == 2
+      end
+
+      it "should be nestable" do
+        @instance.meth.should == 2
+        @context.push_method_definition @klass, :meth, lambda{3}
+        @instance.meth.should == 3
+        @context.push_method_definition @klass, :meth, lambda{5}
+        @instance.meth.should == 5
+        @context.pop_method_definition @klass, :meth
+        @instance.meth.should == 3
+        @context.pop_method_definition @klass, :meth
+        @instance.meth.should == 2
+      end
+    end
+
+    describe "when the method does not already exist" do
+      it "should set the given module's method to the pushed definition, and remove it when popped" do
+        @klass.method_defined?(:meth).should be_false
+        @context.push_method_definition @klass, :meth, lambda{3}
+        @instance.meth.should == 3
+        @context.pop_method_definition @klass, :meth
+        @klass.method_defined?(:meth).should be_false
+      end
+    end
+  end
+
+  describe "#with_method_definition" do
+    before do
+      @klass = Class.new{def meth; 2; end}
+      @instance = @klass.new
+    end
+
+    it "should set the given module's method to the given definition only during the given block" do
+      @instance.meth.should == 2
+      block_run = false
+      @context.with_method_definition @klass, :meth, lambda{3} do
+        block_run = true
+        @instance.meth.should == 3
+      end
+      block_run.should be_true
+      @instance.meth.should == 2
+    end
+
+    it "should be nestable" do
+      @instance.meth.should == 2
+      blocks_run = []
+      @context.with_method_definition @klass, :meth, lambda{3} do
+        blocks_run << 1
+        @instance.meth.should == 3
+        @context.with_method_definition @klass, :meth, lambda{5} do
+          blocks_run << 2
+          @instance.meth.should == 5
+        end
+        @instance.meth.should == 3
+      end
+      blocks_run.should == [1, 2]
+      @instance.meth.should == 2
+    end
+
+    it "should handle nonlocal exits" do
+      exception_class = Class.new(Exception)
+      @instance.meth.should == 2
+      begin
+        @context.with_method_definition @klass, :meth, lambda{3} do
+          @instance.meth.should == 3
+          raise exception_class, 'boom'
+        end
+      rescue exception_class => e
+      end
+      @instance.meth.should == 2
+    end
+  end
 end
 
 describe Temporaries::Values do
@@ -678,6 +768,30 @@ describe Temporaries::Values do
       end
       block_run.should be_true
       $variable.should == 2
+    end
+  end
+
+  describe ".use_method_definition" do
+    before do
+      @klass = klass = Class.new { def meth; 2; end }
+      @instance = @klass.new
+
+      @context_class = Class.new(TestContext) do
+        include Temporaries::Values
+        use_method_definition klass, :meth, lambda{3}
+      end
+      @context = @context_class.new
+    end
+
+    it "should set the given module's constant to the given value for the duration of the run" do
+      @instance.meth.should == 2
+      block_run = false
+      @context.run do
+        block_run = true
+        @instance.meth.should == 3
+      end
+      block_run.should be_true
+      @instance.meth.should == 2
     end
   end
 end
