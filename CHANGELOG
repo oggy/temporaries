@@ -1,3 +1,7 @@
+== LATEST
+
+ * Fix MiniTest support for gem distributions of MiniTest.
+
 == 0.2.0 2012-06-08
 
  * Methods to set temporary method definitions.
