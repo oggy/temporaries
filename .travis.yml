@@ -10,3 +10,8 @@ rvm:
   - rbx-18mode
   - rbx-19mode
   - ree
+gemfile:
+  - Gemfile.minitest-2.2.2
+  - Gemfile.minitest-2.3.0
+  - Gemfile.minitest-3.0.0
+  - Gemfile.rspec
