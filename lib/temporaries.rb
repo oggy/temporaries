@@ -7,14 +7,20 @@ end
 
 if defined?($TEMPORARIES_TEST)
   # Testing this library. Don't install anything.
-elsif defined?(RSpec)
-  Temporaries::Adapters::RSpec.install
-elsif defined?(MiniTest::Unit::TestCase)
-  if RUBY_VERSION >= '1.9.3'
-    Temporaries::Adapters::MiniTest.install
-  else
+else
+  defined?(RSpec) and
+    Temporaries::Adapters::RSpec.install
+
+  defined?(MiniTest::Spec) and
+    if (MiniTest::Unit::VERSION.scan(/\d+/).map { |s| s.to_i } <=> [2, 3, 0]) < 0
+      raise "Temporaries requires minitest 2.3.0 or higher. If you're using the version shipped with ruby, note that newer versions are available via gems."
+    else
+      Temporaries::Adapters::MiniTest.install
+    end
+
+  defined?(MiniTest::Unit) and
     Temporaries::Adapters::TestUnit.install(MiniTest::Unit)
-  end
-elsif defined?(Test::Unit)
-  Temporaries::Adapters::TestUnit.install(Test::Unit)
+
+  defined?(Test::Unit) and
+    Temporaries::Adapters::TestUnit.install(Test::Unit)
 end

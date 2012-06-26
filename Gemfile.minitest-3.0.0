@@ -1,0 +1,6 @@
+source :rubygems
+gemspec
+
+group :dev do
+  gem 'minitest', '3.0.0'
+end

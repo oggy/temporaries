@@ -1,10 +1,10 @@
-@1.9
 Feature: MiniTest Integration
 
   As a developer using MiniTest
   I want to define temporary values
   So I can run my tests in isolation
 
+  @minitest
   Scenario: Using temporary values with MiniTest::Unit
   Given I have a file "mini_test_unit.rb" containing:
     """
@@ -27,6 +27,7 @@ Feature: MiniTest Integration
   When I run "ruby mini_test_unit.rb"
   Then I should see "1 tests, 1 assertions, 0 failures, 0 errors"
 
+  @minitest
   Scenario: Using temporary values with MiniTest::Spec
   Given I have a file "mini_test_spec.rb" containing:
     """
@@ -48,3 +49,14 @@ Feature: MiniTest Integration
     """
   When I run "ruby mini_test_spec.rb"
   Then I should see "1 tests, 1 assertions, 0 failures, 0 errors"
+
+  @minitest @minitest-2.2.2
+  Scenario: Temporaries raises a compatibility error
+  Given I have a file "mini_test_spec.rb" containing:
+    """
+    require 'minitest/spec'
+    require 'temporaries'
+    puts MiniTest::Unit::VERSION
+    """
+  When I run "ruby mini_test_spec.rb"
+  Then I should see "Temporaries requires minitest 2.3.0 or higher."

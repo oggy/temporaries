@@ -1,6 +1,6 @@
 ROOT = File.expand_path('../..', File.dirname(__FILE__))
 $:.unshift File.expand_path('../../lib', File.dirname(__FILE__))
-ENV['BUNDLE_GEMFILE'] = "#{ROOT}/Gemfile"
+ENV['BUNDLE_GEMFILE'] = File.expand_path(ENV['BUNDLE_GEMFILE'] || "#{ROOT}/Gemfile")
 
 $TEMPORARIES_TEST = true
 require 'temporaries'
@@ -14,6 +14,7 @@ original_pwd = nil
 
 Before do
   FileUtils.mkdir_p TMP
+  FileUtils.cp "#{ROOT}/Gemfile", "#{TMP}/Gemfile"
   original_pwd = Dir.pwd
   Dir.chdir TMP
 end

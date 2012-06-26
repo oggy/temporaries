@@ -1,9 +1,17 @@
 require 'ritual'
 
 task :ci do
-  if RUBY_VERSION >= '1.9'
-    sh 'bundle exec rspec spec && bundle exec cucumber'
-  else
-    sh 'bundle exec rspec spec && bundle exec cucumber --tags=~@1.9'
-  end
+  sh 'bundle exec rspec'
+
+  ENV['BUNDLE_GEMFILE'] = 'Gemfile.minitest-2.2.2'
+  sh 'bundle exec cucumber --tags=@minitest-2.2.2 features/mini_test_integration.feature'
+
+  ENV['BUNDLE_GEMFILE'] = 'Gemfile.minitest-2.3.0'
+  sh 'bundle exec cucumber --tags=@minitest --tags=~@minitest-2.2.2 features/mini_test_integration.feature'
+
+  ENV['BUNDLE_GEMFILE'] = 'Gemfile.minitest-3.0.0'
+  sh 'bundle exec cucumber --tags=@minitest --tags=~@minitest-2.2.2 features/mini_test_integration.feature'
+
+  ENV['BUNDLE_GEMFILE'] = 'Gemfile.rspec'
+  sh 'bundle exec cucumber features/rspec_integration.feature'
 end
