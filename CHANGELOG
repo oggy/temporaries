@@ -1,6 +1,7 @@
 == LATEST
 
- * Fix MiniTest support for gem distributions of MiniTest.
+ * Fix support for gem distributions of MiniTest.
+ * MiniTest < 2.3.0 is no longer supported.
 
 == 0.2.0 2012-06-08
 
