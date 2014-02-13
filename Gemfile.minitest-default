@@ -1,7 +1,8 @@
 source 'https://rubygems.org/'
 
+# Excludes minitest gem to use the default that ships with ruby.
+
 gem 'cucumber'
-gem 'minitest', '< 5'
 gem 'ritual'
 gem 'rspec'
 gem 'rubysl', platform: :rbx
