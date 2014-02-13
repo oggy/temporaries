@@ -1,4 +1,4 @@
-# Temporaries
+# Temporaries [![Build Status](https://travis-ci.org/oggy/temporaries.png)](https://travis-ci.org/oggy/temporaries)
 
 Set things temporarily and declaratively. Best way to test.
 
