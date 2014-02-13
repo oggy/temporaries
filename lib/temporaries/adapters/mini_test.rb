@@ -9,12 +9,22 @@ module Temporaries
         end
       end
 
-      def before(&block)
-        context.before {|tc| tc.instance_eval(&block) }
+      def before(&hook)
+        context.include Module.new {
+          define_method(:setup) do |*args, &block|
+            super(*args, &block)
+            instance_eval(&hook)
+          end
+        }
       end
 
-      def after(&block)
-        context.after {|tc| tc.instance_eval(&block) }
+      def after(&hook)
+        context.include Module.new {
+          define_method(:teardown) do |*args, &block|
+            instance_eval(&hook)
+            super(*args, &block)
+          end
+        }
       end
 
       module Extension

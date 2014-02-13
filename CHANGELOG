@@ -1,5 +1,6 @@
 == LATEST
 
+ * Fix multiple use_* calls in MiniTest >= 3.3.
  * Fix support for MiniTest >= 4.6.0.
 
 == 0.3.0 2012-06-26
