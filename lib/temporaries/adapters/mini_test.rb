@@ -10,7 +10,7 @@ module Temporaries
       end
 
       def before(&hook)
-        context.include Module.new {
+        context.__send__ :include, Module.new {
           define_method(:setup) do |*args, &block|
             super(*args, &block)
             instance_eval(&hook)
@@ -19,7 +19,7 @@ module Temporaries
       end
 
       def after(&hook)
-        context.include Module.new {
+        context.__send__ :include, Module.new {
           define_method(:teardown) do |*args, &block|
             instance_eval(&hook)
             super(*args, &block)
