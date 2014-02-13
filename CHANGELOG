@@ -1,4 +1,4 @@
-== LATEST
+== 0.4.0 2014-02-13
 
  * Fix multiple use_* calls in MiniTest >= 3.3.
  * Fix support for MiniTest >= 4.6.0.
