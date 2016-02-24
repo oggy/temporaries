@@ -92,7 +92,7 @@ describe Temporaries::Directory do
         @context.tmp.should == "#{TMP}/dir1"
         File.should be_directory("#{TMP}/dir1")
       end
-      block_run.should be_true
+      block_run.should eq(true)
 
       @context.tmp.should be_nil
       File.should_not exist("#{TMP}/dir1")
@@ -161,7 +161,7 @@ describe Temporaries::Directory do
         @context.tmp.should == "#{TMP}/dir"
         File.should be_directory("#{TMP}/dir")
       end
-      block_run.should be_true
+      block_run.should eq(true)
 
       @context.tmp.should be_nil
       File.should_not exist("#{TMP}/dir")

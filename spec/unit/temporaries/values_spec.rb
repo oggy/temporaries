@@ -41,11 +41,11 @@ describe Temporaries::Values do
 
     describe "when the constant does not already exist" do
       it "should set the given module's constant to the pushed value, and remove it when popped" do
-        @mod.const_defined?(:CONSTANT).should be_false
+        @mod.const_defined?(:CONSTANT).should eq(false)
         @context.push_constant_value @mod, :CONSTANT, 3
         @mod::CONSTANT.should == 3
         @context.pop_constant_value @mod, :CONSTANT
-        @mod.const_defined?(:CONSTANT).should be_false
+        @mod.const_defined?(:CONSTANT).should eq(false)
       end
     end
 
@@ -74,7 +74,7 @@ describe Temporaries::Values do
         block_run = true
         @mod::CONSTANT.should == 3
       end
-      block_run.should be_true
+      block_run.should eq(true)
       @mod::CONSTANT.should == 2
     end
 
@@ -150,7 +150,7 @@ describe Temporaries::Values do
         block_run = true
         @object.attribute.should == 3
       end
-      block_run.should be_true
+      block_run.should eq(true)
       @object.attribute.should == 2
     end
 
@@ -217,11 +217,11 @@ describe Temporaries::Values do
 
     describe "when the hash key does not already exist" do
       it "should set the given hash's key to the pushed value, and remove it when popped" do
-        @hash.key?(:key).should be_false
+        @hash.key?(:key).should eq(false)
         @context.push_hash_value @hash, :key, 3
         @hash[:key].should == 3
         @context.pop_hash_value @hash, :key
-        @hash.key?(:key).should be_false
+        @hash.key?(:key).should eq(false)
       end
     end
   end
@@ -238,7 +238,7 @@ describe Temporaries::Values do
         block_run = true
         @hash[:key].should == 3
       end
-      block_run.should be_true
+      block_run.should eq(true)
       @hash[:key].should == 2
     end
 
@@ -305,11 +305,11 @@ describe Temporaries::Values do
 
     describe "when the instance variable does not already exist" do
       it "should set the given instance variable to the pushed value, and remove it when popped" do
-        @object.instance_variable_defined?(:@variable).should be_false
+        @object.instance_variable_defined?(:@variable).should eq(false)
         @context.push_instance_variable_value @object, :variable, 3
         @object.instance_variable_get(:@variable).should == 3
         @context.pop_instance_variable_value @object, :variable
-        @object.instance_variable_defined?(:@variable).should be_false
+        @object.instance_variable_defined?(:@variable).should eq(false)
       end
     end
   end
@@ -327,7 +327,7 @@ describe Temporaries::Values do
         block_run = true
         @object.instance_variable_get(:@variable).should == 3
       end
-      block_run.should be_true
+      block_run.should eq(true)
       @object.instance_variable_get(:@variable).should == 2
     end
 
@@ -400,11 +400,11 @@ describe Temporaries::Values do
 
     describe "when the class variable does not already exist" do
       it "should set the given class variable to the pushed value, and remove it when popped" do
-        @class.class_variable_defined?('@@variable').should be_false
+        @class.class_variable_defined?('@@variable').should eq(false)
         @context.push_class_variable_value @class, :variable, 3
         @class.class_eval('@@variable').should == 3
         @context.pop_class_variable_value @class, :variable
-        @class.class_variable_defined?('@@variable').should be_false
+        @class.class_variable_defined?('@@variable').should eq(false)
       end
     end
   end
@@ -422,7 +422,7 @@ describe Temporaries::Values do
         block_run = true
         @class.class_eval('@@variable').should == 3
       end
-      block_run.should be_true
+      block_run.should eq(true)
       @class.class_eval('@@variable').should == 2
     end
 
@@ -498,7 +498,7 @@ describe Temporaries::Values do
         block_run = true
         $variable.should == 3
       end
-      block_run.should be_true
+      block_run.should eq(true)
       $variable.should == 2
     end
 
@@ -566,11 +566,11 @@ describe Temporaries::Values do
 
     describe "when the method does not already exist" do
       it "should set the given module's method to the pushed definition, and remove it when popped" do
-        @klass.method_defined?(:meth).should be_false
+        @klass.method_defined?(:meth).should eq(false)
         @context.push_method_definition @klass, :meth, lambda{3}
         @instance.meth.should == 3
         @context.pop_method_definition @klass, :meth
-        @klass.method_defined?(:meth).should be_false
+        @klass.method_defined?(:meth).should eq(false)
       end
     end
   end
@@ -588,7 +588,7 @@ describe Temporaries::Values do
         block_run = true
         @instance.meth.should == 3
       end
-      block_run.should be_true
+      block_run.should eq(true)
       @instance.meth.should == 2
     end
 
@@ -643,7 +643,7 @@ describe Temporaries::Values do
         block_run = true
         @mod::CONSTANT.should == 3
       end
-      block_run.should be_true
+      block_run.should eq(true)
       @mod::CONSTANT.should == 2
     end
   end
@@ -668,7 +668,7 @@ describe Temporaries::Values do
         block_run = true
         @object.attribute.should == 3
       end
-      block_run.should be_true
+      block_run.should eq(true)
       @object.attribute.should == 2
     end
   end
@@ -691,7 +691,7 @@ describe Temporaries::Values do
         block_run = true
         @hash[:key].should == 3
       end
-      block_run.should be_true
+      block_run.should eq(true)
       @hash[:key].should == 2
     end
   end
@@ -715,7 +715,7 @@ describe Temporaries::Values do
         block_run = true
         @object.instance_variable_get(:@variable).should == 3
       end
-      block_run.should be_true
+      block_run.should eq(true)
       @object.instance_variable_get(:@variable).should == 2
     end
   end
@@ -739,7 +739,7 @@ describe Temporaries::Values do
         block_run = true
         @class.class_eval('@@variable').should == 3
       end
-      block_run.should be_true
+      block_run.should eq(true)
       @class.class_eval('@@variable').should == 2
     end
   end
@@ -766,7 +766,7 @@ describe Temporaries::Values do
         block_run = true
         $variable.should == 3
       end
-      block_run.should be_true
+      block_run.should eq(true)
       $variable.should == 2
     end
   end
@@ -790,7 +790,7 @@ describe Temporaries::Values do
         block_run = true
         @instance.meth.should == 3
       end
-      block_run.should be_true
+      block_run.should eq(true)
       @instance.meth.should == 2
     end
   end
